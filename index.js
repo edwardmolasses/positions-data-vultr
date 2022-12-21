@@ -22,12 +22,13 @@ if (DEBUG_MODE.TELEGRAM_TOGGLE) {
   setVariableInterval(() => { sendTelegramAlertMessage() }, 15, false);
 
   // daily digest scheduled job
-  const dailyDigestRule = new schedule.RecurrenceRule();
-  dailyDigestRule.hour = 6;
-  dailyDigestRule.minute = 0;
-  const dailyDigestJob = schedule.scheduleJob(dailyDigestRule, function () {
-    sendTelegramDailyMessage();
-  });
+  setVariableInterval(() => { sendTelegramDailyMessage() }, 45, false);
+  // const dailyDigestRule = new schedule.RecurrenceRule();
+  // dailyDigestRule.hour = 6;
+  // dailyDigestRule.minute = 0;
+  // const dailyDigestJob = schedule.scheduleJob(dailyDigestRule, function () {
+  //   sendTelegramDailyMessage();
+  // });
 }
 
 // async function testVix() {

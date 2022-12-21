@@ -20,6 +20,31 @@ const remoteChartWidth = 1030;
 const remoteChartHeight = 675;
 const chartFilename = 'chart.png';
 
+async function takeScreenshot(url, msg, sendMsgCallback) {
+    try {
+        puppeteer
+            .launch({
+                defaultViewport: {
+                    width: remoteChartWidth,
+                    height: remoteChartHeight,
+                },
+            })
+            .then(async (browser) => {
+                const page = await browser.newPage();
+
+                page.setDefaultNavigationTimeout(0);
+                await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+                setTimeout(async function () {
+                    await page.screenshot({ path: chartFilename });
+                    await browser.close();
+                    await sendMsgCallback(msg);
+                }, 10000);
+            });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 const sendMsgByBot = async function (msg) {
     if (msg) {
         const session = new StringSession(TG_AUTH_KEY); // You should put your string session here
@@ -34,55 +59,19 @@ const sendMsgByBot = async function (msg) {
     }
 }
 
-async function takeScreenshot(url) {
-    //Wait for browser to build and launch properly
-    let driver = await new Builder().forBrowser("chrome").build();
-
-    //Navigate to the url passed in
-    await driver.get(url);
-
-    //Capture the screenshot
-    let image = await driver.takeScreenshot();
-
-    await fs.writeFileSync("./chart.png", image, "base64");
-    await driver.quit();
-}
-
 async function sendTelegramDailyMessage() {
-    // const msg = await getDailyDigestMessage();
+    const msg = await getDailyDigestMessage();
 
     // await sendMsgByBot(msg);
+    takeScreenshot(`http://${remoteChartUrl}`, msg, sendMsgByBot);
 }
 
 async function sendTelegramAlertMessage() {
-    // const msg = await getAlertMessage();
-    const msg = await getDailyDigestMessage();
+    const msg = await getAlertMessage();
+    // const msg = await getDailyDigestMessage();
     // await sendMsgByBot(msg);
 
-    // takeScreenshot(`http://${remoteChartUrl}`);
-    try {
-        puppeteer
-            .launch({
-                defaultViewport: {
-                    width: remoteChartWidth,
-                    height: remoteChartHeight,
-                },
-            })
-            .then(async (browser) => {
-                const page = await browser.newPage();
-                const url = `http://${remoteChartUrl}`;
-
-                page.setDefaultNavigationTimeout(0);
-                await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
-                setTimeout(async function () {
-                    await page.screenshot({ path: chartFilename });
-                    await browser.close();
-                    await sendMsgByBot(msg);
-                }, 10000);
-            });
-    } catch (error) {
-        console.error(error);
-    }
+    takeScreenshot(`http://${remoteChartUrl}`, msg, sendMsgByBot);
 }
 
 module.exports = {
