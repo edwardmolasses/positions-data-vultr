@@ -135,6 +135,14 @@ const getAlertMsgBuildVars = function (allPositionsData) {
     const longShortDiffOver24h = lastPositionData.longShortDiff - dayAwayFromLatestItem.longShortDiff;
     const longShortDiffPercent24h = Math.round(longShortDiffOver24h / THRESHOLDS.HIGH_LEVERAGE * 100);
     const volumeTotalsPercent24h = Math.ceil(((latestTotalVolume - dayAwayTotalVolume) / dayAwayTotalVolume) * 100);
+    const volumePercentageTitle = lastPositionData.shortVolume <= lastPositionData.longVolume
+        ? `S as % of L`
+        : `L as % of S`;
+    const volumePercentage = Math.round(
+        lastPositionData.shortVolume <= lastPositionData.longVolume
+            ? lastPositionData.shortVolume / lastPositionData.longVolume * 100
+            : lastPositionData.longVolume / lastPositionData.shortVolume * 100
+    );
     const ratio = parseFloat(lastPositionData.shortVolume / lastPositionData.longVolume).toFixed(2);
 
     return {
@@ -144,6 +152,8 @@ const getAlertMsgBuildVars = function (allPositionsData) {
         'longShortDiffPercent24h': longShortDiffPercent24h,
         'volumeTotalsPercent24h': volumeTotalsPercent24h,
         'updatedAllPositionsData': updatedAllPositionsData,
+        'volumePercentageTitle': volumePercentageTitle,
+        'volumePercentage': volumePercentage,
         'ratio': ratio
     }
 }
@@ -299,7 +309,9 @@ const getMessageStats = (
     longShortDiffPercent24h,
     isExtremeLeverage,
     latestTrendPercentChange,
-    latestTrendHoursElapsed
+    latestTrendHoursElapsed,
+    volumePercentageTitle = null,
+    volumePercentage = null
 ) => {
     const extremeLowTimeframeLeverageEmoji = latestTrendPercentChange > 0 ? bullEmoji : latestTrendPercentChange < 0 ? bearEmoji : '';
     const longShortDiffPercent24hEmoji = longShortDiffPercent24h > 0 ? bullEmoji : longShortDiffPercent24h < 0 ? bearEmoji : '';
@@ -309,6 +321,9 @@ const getMessageStats = (
     msg += `Short Volume   $${prettifyNum(shortVolume)}\n`;
     msg += `Long Volume    $${prettifyNum(longVolume)}\n`;
     msg += `L/S Difference $${prettifyNum(longShortDiff)}\n`;
+    if (volumePercentageTitle && volumePercentage) {
+        msg += ` ${volumePercentageTitle}   ${volumePercentage}%\n`;
+    }
     msg += ` Diff Latest%  ${addPercentageSign(latestTrendPercentChange)} (${latestTrendHoursElapsed} hour${latestTrendHoursElapsed > 0 ? 's' : ''}) ${extremeLowTimeframeLeverageEmoji}\n`;
     msg += ` Diff 24h%     ${addPercentageSign(longShortDiffPercent24h)} ${longShortDiffPercent24hEmoji} ${isExtremeLeverage ? suprisedEmoji : ''}\n`;
     msg += `Total Volume   $${prettifyNum(shortVolume + longVolume)} (${addPercentageSign(volumeTotalsPercent24h)})\n`;
@@ -331,6 +346,8 @@ const buildDailyDigest = async function (allPositionsData) {
         longShortDiffPercent24h,
         volumeTotalsPercent24h,
         updatedAllPositionsData,
+        volumePercentageTitle,
+        volumePercentage,
         ratio } = getAlertMsgBuildVars(allPositionsData);
     const { latestTrend,
         trendStartIndex,
@@ -366,7 +383,9 @@ const buildDailyDigest = async function (allPositionsData) {
         longShortDiffPercent24h,
         extremeLeverageConviction,
         latestTrendPercentChange,
-        latestTrendHoursElapsed
+        latestTrendHoursElapsed,
+        volumePercentageTitle,
+        volumePercentage
     );
 
     return msgTitle + msgDetail;
@@ -386,6 +405,8 @@ const buildAlertMessage = function (
         longShortDiffPercent24h,
         volumeTotalsPercent24h,
         updatedAllPositionsData,
+        volumePercentageTitle,
+        volumePercentage,
         ratio } = getAlertMsgBuildVars(allPositionsData);
     const { latestTrend,
         trendStartIndex,
@@ -459,7 +480,9 @@ const buildAlertMessage = function (
                 longShortDiffPercent24h,
                 extremeLeverageConviction,
                 latestTrendPercentChange,
-                latestTrendHoursElapsed
+                latestTrendHoursElapsed,
+                volumePercentageTitle,
+                volumePercentage
             );
             console.log('lastMsgTimestamp: ', lastMsgTimestamp)
             return msgTitle + msgDetail;
