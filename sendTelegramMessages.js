@@ -71,7 +71,9 @@ async function sendTelegramAlertMessage() {
     // const msg = await getDailyDigestMessage();
     // await sendMsgByBot(msg);
 
-    takeScreenshot(`http://${remoteChartUrl}`, msg, sendMsgByBot);
+    if (msg) {
+        takeScreenshot(`http://${remoteChartUrl}`, msg, sendMsgByBot);
+    }
 }
 
 module.exports = {

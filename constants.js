@@ -8,7 +8,7 @@ module.exports = {
         HIGH_LEVEL_OCCURRENCES_FOR_RELEVANCE: 4,
         EXTREME_LEVEL_OCCURRENCES_FOR_RELEVANCE: 2,
         LOWER_HIGH_LEVERAGE: 40 * millionsMultiplier,
-        HIGH_LEVERAGE: 50 * millionsMultiplier,
+        HIGH_LEVERAGE: 47 * millionsMultiplier,
         EXTREME_LEVERAGE: 59 * millionsMultiplier,
         MAX_EXTREME_LEVERAGE: 85 * millionsMultiplier,
         SL_DIFF_EXTREME_PERCENT: 50,

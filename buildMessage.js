@@ -134,6 +134,13 @@ const getAlertMsgBuildVars = function (allPositionsData) {
     const dayAwayTotalVolume = dayAwayFromLatestItem.shortVolume + dayAwayFromLatestItem.longVolume;
     const longShortDiffOver24h = lastPositionData.longShortDiff - dayAwayFromLatestItem.longShortDiff;
     const longShortDiffPercent24h = Math.round(longShortDiffOver24h / THRESHOLDS.HIGH_LEVERAGE * 100);
+    const diffAgainstLargerVolumePercent =
+        Math.round(
+            Math.abs(lastPositionData.longShortDiff) /
+            (lastPositionData.shortVolume >= lastPositionData.longVolume ? lastPositionData.shortVolume : lastPositionData.longVolume) *
+            100
+        );
+
     const volumeTotalsPercent24h = Math.ceil(((latestTotalVolume - dayAwayTotalVolume) / dayAwayTotalVolume) * 100);
     const volumePercentageTitle = lastPositionData.shortVolume <= lastPositionData.longVolume
         ? `S as % of L`
@@ -154,6 +161,7 @@ const getAlertMsgBuildVars = function (allPositionsData) {
         'updatedAllPositionsData': updatedAllPositionsData,
         'volumePercentageTitle': volumePercentageTitle,
         'volumePercentage': volumePercentage,
+        'diffAgainstLargerVolumePercent': diffAgainstLargerVolumePercent,
         'ratio': ratio
     }
 }
@@ -311,7 +319,8 @@ const getMessageStats = (
     latestTrendPercentChange,
     latestTrendHoursElapsed,
     volumePercentageTitle = null,
-    volumePercentage = null
+    volumePercentage = null,
+    diffAgainstLargerVolumePercent
 ) => {
     const extremeLowTimeframeLeverageEmoji = latestTrendPercentChange > 0 ? bullEmoji : latestTrendPercentChange < 0 ? bearEmoji : '';
     const longShortDiffPercent24hEmoji = longShortDiffPercent24h > 0 ? bullEmoji : longShortDiffPercent24h < 0 ? bearEmoji : '';
@@ -320,7 +329,7 @@ const getMessageStats = (
     msg += `<pre>`;
     msg += `Short Volume   $${prettifyNum(shortVolume)}\n`;
     msg += `Long Volume    $${prettifyNum(longVolume)}\n`;
-    msg += `L/S Difference $${prettifyNum(longShortDiff)}\n`;
+    msg += `L/S Difference $${prettifyNum(longShortDiff)} (${diffAgainstLargerVolumePercent}%)\n`;
     if (volumePercentageTitle && volumePercentage) {
         msg += ` ${volumePercentageTitle}   ${volumePercentage}%\n`;
     }
@@ -348,6 +357,7 @@ const buildDailyDigest = async function (allPositionsData) {
         updatedAllPositionsData,
         volumePercentageTitle,
         volumePercentage,
+        diffAgainstLargerVolumePercent,
         ratio } = getAlertMsgBuildVars(allPositionsData);
     const { latestTrend,
         trendStartIndex,
@@ -385,7 +395,8 @@ const buildDailyDigest = async function (allPositionsData) {
         latestTrendPercentChange,
         latestTrendHoursElapsed,
         volumePercentageTitle,
-        volumePercentage
+        volumePercentage,
+        diffAgainstLargerVolumePercent
     );
 
     return msgTitle + msgDetail;
@@ -407,6 +418,7 @@ const buildAlertMessage = function (
         updatedAllPositionsData,
         volumePercentageTitle,
         volumePercentage,
+        diffAgainstLargerVolumePercent,
         ratio } = getAlertMsgBuildVars(allPositionsData);
     const { latestTrend,
         trendStartIndex,
@@ -482,7 +494,8 @@ const buildAlertMessage = function (
                 latestTrendPercentChange,
                 latestTrendHoursElapsed,
                 volumePercentageTitle,
-                volumePercentage
+                volumePercentage,
+                diffAgainstLargerVolumePercent
             );
             console.log('lastMsgTimestamp: ', lastMsgTimestamp)
             return msgTitle + msgDetail;
