@@ -19,3 +19,7 @@ Your app should now be running on [localhost:3000](http://localhost:3000/).
 ```
 ...
 ```
+
+## Telegram Message Legend
+
+![legend](faq.png)
