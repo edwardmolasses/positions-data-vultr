@@ -95,10 +95,17 @@ const findLastTrend = function (positionsData) {
     const startMovingAverage = positionsData[trendStartIndex].movingAverage;
     const endMovingAverage = positionsData[trendEndIndex].movingAverage;
     const latestTrendChange = endMovingAverage - startMovingAverage;
-    const latestTrendPercentChange = Math.round(latestTrendChange / THRESHOLDS.HIGH_LEVERAGE * 100);
     const latestTrendHoursElapsed = diffHours(positionsData[trendStartIndex].timestamp, positionsData[trendEndIndex].timestamp).toFixed(1);
+    const latestTrendPercentChangeDraft = (latestTrendChange / Math.abs(startMovingAverage) * 100).toFixed(2);
+    const latestTrendPercentChange = latestTrendPercentChangeDraft > 1 || latestTrendPercentChangeDraft < -1 ? Math.round(latestTrendPercentChangeDraft) : latestTrendPercentChangeDraft;
 
-    return { latestTrend, trendStartIndex, trendEndIndex, latestTrendPercentChange, latestTrendHoursElapsed };
+    return {
+        latestTrend,
+        trendStartIndex,
+        trendEndIndex,
+        latestTrendPercentChange,
+        latestTrendHoursElapsed
+    };
 }
 
 const getAlertMsgBuildVars = function (allPositionsData) {
@@ -130,18 +137,18 @@ const getAlertMsgBuildVars = function (allPositionsData) {
 
     const dayAwayFromLatestItem =
         allPositionsData[allPositionsDataReverse.findIndex(item => ((latestTimestamp - truncateTimestamp(item.timestamp)) / 3600) > 24)];
-    const latestTotalVolume = allPositionsData[allPositionsData.length - 1].shortVolume + allPositionsData[allPositionsData.length - 1].longVolume;
+    const latestTotalVolume = lastPositionData.shortVolume + lastPositionData.longVolume;
     const dayAwayTotalVolume = dayAwayFromLatestItem.shortVolume + dayAwayFromLatestItem.longVolume;
     const longShortDiffOver24h = lastPositionData.longShortDiff - dayAwayFromLatestItem.longShortDiff;
-    const longShortDiffPercent24h = Math.round(longShortDiffOver24h / THRESHOLDS.HIGH_LEVERAGE * 100);
+    const longShortDiffPercent24h = Math.round(longShortDiffOver24h / Math.abs(dayAwayFromLatestItem.longShortDiff) * 100);
     const diffAgainstLargerVolumePercent =
-        Math.round(
+        (
             Math.abs(lastPositionData.longShortDiff) /
             (lastPositionData.shortVolume >= lastPositionData.longVolume ? lastPositionData.shortVolume : lastPositionData.longVolume) *
             100
-        );
+        ).toFixed(1);
 
-    const volumeTotalsPercent24h = Math.ceil(((latestTotalVolume - dayAwayTotalVolume) / dayAwayTotalVolume) * 100);
+    const volumeTotalsPercent24h = (((latestTotalVolume - dayAwayTotalVolume) / dayAwayTotalVolume) * 100).toFixed(2);
     const volumePercentageTitle = lastPositionData.shortVolume <= lastPositionData.longVolume
         ? `S as % of L`
         : `L as % of S`;
@@ -156,8 +163,8 @@ const getAlertMsgBuildVars = function (allPositionsData) {
         'lastPositionData': lastPositionData,
         'longShortDiffPercent1h': longShortDiffPercent1h,
         'isLongShortDiffPercentExtreme': isLongShortDiffPercentExtreme,
-        'longShortDiffPercent24h': longShortDiffPercent24h,
-        'volumeTotalsPercent24h': volumeTotalsPercent24h,
+        'longShortDiffPercent24h': longShortDiffPercent24h > 1 || longShortDiffPercent24h < -1 ? Math.round(longShortDiffPercent24h) : longShortDiffPercent24h,
+        'volumeTotalsPercent24h': volumeTotalsPercent24h > 1 || volumeTotalsPercent24h < -1 ? Math.round(volumeTotalsPercent24h) : volumeTotalsPercent24h,
         'updatedAllPositionsData': updatedAllPositionsData,
         'volumePercentageTitle': volumePercentageTitle,
         'volumePercentage': volumePercentage,
@@ -327,15 +334,15 @@ const getMessageStats = (
     let msg = '\n';
 
     msg += `<pre>`;
-    msg += `Short Volume   $${prettifyNum(shortVolume)}\n`;
-    msg += `Long Volume    $${prettifyNum(longVolume)}\n`;
-    msg += `L/S Difference $${prettifyNum(longShortDiff)} (${diffAgainstLargerVolumePercent}%)\n`;
+    msg += `Short Volume  $${prettifyNum(shortVolume)}\n`;
+    msg += `Long Volume   $${prettifyNum(longVolume)}\n`;
+    msg += `L/S Diff      $${prettifyNum(longShortDiff)} (${diffAgainstLargerVolumePercent}%)\n`;
     if (volumePercentageTitle && volumePercentage) {
-        msg += ` ${volumePercentageTitle}   ${volumePercentage}%\n`;
+        msg += ` ${volumePercentageTitle}  ${volumePercentage}%\n`;
     }
-    msg += ` Diff Latest%  ${addPercentageSign(latestTrendPercentChange)} (${latestTrendHoursElapsed} hour${latestTrendHoursElapsed > 0 ? 's' : ''}) ${extremeLowTimeframeLeverageEmoji}\n`;
-    msg += ` Diff 24h%     ${addPercentageSign(longShortDiffPercent24h)} ${longShortDiffPercent24hEmoji} ${isExtremeLeverage ? suprisedEmoji : ''}\n`;
-    msg += `Total Volume   $${prettifyNum(shortVolume + longVolume)} (${addPercentageSign(volumeTotalsPercent24h)})\n`;
+    msg += ` Diff Latest% ${addPercentageSign(latestTrendPercentChange)} (${latestTrendHoursElapsed} hour${latestTrendHoursElapsed > 0 ? 's' : ''}) ${extremeLowTimeframeLeverageEmoji}\n`;
+    msg += ` Diff 24h%    ${addPercentageSign(longShortDiffPercent24h)} ${longShortDiffPercent24hEmoji} ${isExtremeLeverage ? suprisedEmoji : ''}\n`;
+    msg += `Total Volume  $${prettifyNum(shortVolume + longVolume)} (${addPercentageSign(volumeTotalsPercent24h)})\n`;
     // msg += `L/S Diff Std Deviation  $${prettifyNum(parseInt(longShortDiffStandardDeviation))}\n`;
     msg += `</pre>`
 
