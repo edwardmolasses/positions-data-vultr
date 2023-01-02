@@ -33,7 +33,8 @@ async function takeScreenshot(url, msg, sendMsgCallback) {
                 const page = await browser.newPage();
 
                 page.setDefaultNavigationTimeout(0);
-                await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+                // await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+                await page.goto(url, { waitUntil: 'load', timeout: 0 });
                 setTimeout(async function () {
                     await page.screenshot({ path: chartFilename });
                     await browser.close();
@@ -62,14 +63,11 @@ const sendMsgByBot = async function (msg) {
 async function sendTelegramDailyMessage() {
     const msg = await getDailyDigestMessage();
 
-    // await sendMsgByBot(msg);
     takeScreenshot(`http://${remoteChartUrl}`, msg, sendMsgByBot);
 }
 
 async function sendTelegramAlertMessage() {
     const msg = await getAlertMessage();
-    // const msg = await getDailyDigestMessage();
-    // await sendMsgByBot(msg);
 
     if (msg) {
         takeScreenshot(`http://${remoteChartUrl}`, msg, sendMsgByBot);
