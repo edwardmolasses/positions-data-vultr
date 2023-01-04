@@ -393,7 +393,7 @@ const buildDailyDigest = async function (allPositionsData) {
         7
     );
     const lowTimeframeLeverageConviction = DEBUG_MODE['LOW_TF_LEVERAGE'] ? 8 : getLowTimeframeChangeConviction(lastPositionData.longShortDiff, latestTrendPercentChange, latestTrendHoursElapsed);
-    let msgTitle = `<b><u><i>DAILY DIGEST for ${pst}</i></u></b>\n`;
+    let msgTitle = `<b><u><i>HOURLY DIGEST for ${pst}</i></u></b>\n`;
     let msgDetail = '';
 
     // msgDetail += buildConvictionMeter(Math.max(extremeLeverageConviction, sustainedHeavyLeverageConviction, lowTimeframeLeverageConviction));

@@ -15,11 +15,13 @@ const app = express(); //Line 2
 const path = __dirname + '/public/views/';
 
 // get leverage positions interval
-setVariableInterval(() => { addPositions() }, 45);
+setVariableInterval(() => { addPositions() }, 55);
 
 if (DEBUG_MODE.TELEGRAM_TOGGLE) {
   // alert message interval
-  setVariableInterval(() => { sendTelegramAlertMessage() }, 15, false);
+  setTimeout(() => {
+    setVariableInterval(() => { sendTelegramAlertMessage() }, 15, false);
+  }, 5 * 60 * 1000);
 
   // daily digest scheduled job
   setVariableInterval(() => { sendTelegramDailyMessage() }, 45, false);
@@ -30,12 +32,6 @@ if (DEBUG_MODE.TELEGRAM_TOGGLE) {
   //   sendTelegramDailyMessage();
   // });
 }
-
-// async function testVix() {
-//   // console.log(getVixData());
-//   // await getVixData();
-// }
-// testVix();
 
 app.use(express.static(path));
 

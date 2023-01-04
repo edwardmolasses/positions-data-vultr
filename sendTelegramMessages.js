@@ -9,10 +9,12 @@ require("chromedriver");
 let fs = require("fs");
 
 const isDebugMode = DEBUG_MODE['EXTREME_LONGS'] || DEBUG_MODE['HOURLY'] || DEBUG_MODE['EXTREME_SHORTS'] || DEBUG_MODE['LOW_TF_LEVERAGE'];
-const peer = isDebugMode ? 'edwardmolasses' : 'LeverageRatioAlerts';
+// const peer = isDebugMode ? 'edwardmolasses' : 'LeverageRatioAlerts';
+const peer = 'LeverageRatioAlerts';
 const TG_API_ID = parseInt(process.env.TG_API_ID);
 const TG_API_HASH = process.env.TG_API_HASH;
-const TG_AUTH_KEY = isDebugMode ? process.env.TG_AUTH_KEY : process.env.TG_BOT_AUTH_KEY;
+// const TG_AUTH_KEY = isDebugMode ? process.env.TG_AUTH_KEY : process.env.TG_BOT_AUTH_KEY;
+const TG_AUTH_KEY = process.env.TG_BOT_AUTH_KEY;
 const PORT = process.env.CLIENT_PORT;
 
 const remoteChartUrl = `localhost:${PORT}`;
