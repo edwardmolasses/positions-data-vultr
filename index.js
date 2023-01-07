@@ -46,10 +46,12 @@ app.get('/api/getContentfulNumOfEntries', async (req, res) => {
 });
 
 app.get('/api/positionsDataFromContentful', async (req, res) => {
+  console.log('handing positionsData from contentful request...');
   res.send(await getPositionsData());
 });
 
 app.get('/api/positionsData', async (req, res) => {
+  console.log('handing positionsData request...');
   CSVToJSON().fromFile('positions.csv')
     .then(positions => {
       res.send(
