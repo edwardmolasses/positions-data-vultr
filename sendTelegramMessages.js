@@ -15,7 +15,8 @@ const TG_API_HASH = process.env.TG_API_HASH;
 const TG_AUTH_KEY = isDebugMode ? process.env.TG_AUTH_KEY : process.env.TG_BOT_AUTH_KEY;
 const PORT = process.env.CLIENT_PORT;
 
-const remoteChartUrl = `localhost:${PORT}`;
+//const remoteChartUrl = `localhost:${PORT}`;
+const remoteChartUrl = `leveragechart.tk`;
 const remoteChartWidth = 1030;
 const remoteChartHeight = 675;
 const chartFilename = 'chart.png';

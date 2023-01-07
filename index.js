@@ -9,6 +9,7 @@ const getPositionsData = require('./getPositionsData');
 const { sendTelegramAlertMessage, sendTelegramDailyMessage } = require('./sendTelegramMessages');
 const setVariableInterval = require('./setVariableInterval');
 const getContentfulNumOfEntries = require('./getContentfulNumOfEntries');
+//const { createProxyMiddleware } = require('http-proxy-middleware');
 const { DEBUG_MODE } = require('./constants');
 
 const app = express(); //Line 2
@@ -38,10 +39,6 @@ if (DEBUG_MODE.TELEGRAM_TOGGLE) {
 // testVix();
 
 app.use(express.static(path));
-
-app.get('/', function (req, res) {
-  res.sendFile(path + "index");
-});
 
 // create a GET route
 app.get('/api/getContentfulNumOfEntries', async (req, res) => {

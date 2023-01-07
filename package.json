@@ -20,6 +20,7 @@
     "ejs": "^3.1.5",
     "express": "^4.15.2",
     "fs": "^0.0.1-security",
+    "http-proxy-middleware": "^2.0.6",
     "input": "^1.0.1",
     "neat-csv": "^7.0.0",
     "node-fetch": "^2.6.6",
