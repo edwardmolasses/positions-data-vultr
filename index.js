@@ -23,7 +23,7 @@ if (DEBUG_MODE.TELEGRAM_TOGGLE) {
   setVariableInterval(() => { sendTelegramAlertMessage() }, 15, false);
 
   // daily digest scheduled job
-  setVariableInterval(() => { sendTelegramDailyMessage() }, 45, false);
+  setVariableInterval(() => { sendTelegramDailyMessage() }, 25, false);
   // const dailyDigestRule = new schedule.RecurrenceRule();
   // dailyDigestRule.hour = 6;
   // dailyDigestRule.minute = 0;
