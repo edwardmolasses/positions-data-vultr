@@ -548,13 +548,13 @@ async function getAlertMessage() {
 
     /* alert checks */
     const isSustainedHeavyLongs = latestPositionData.reduce(
-        (numHeavyLongItems, currentItem) => currentItem.longShortDiff < -leverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numSustainedOccurencesForRelevance;
+        (numHeavyLongItems, currentItem) => currentItem.longShortDiff > -leverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numSustainedOccurencesForRelevance;
     const isExtremeLongs = DEBUG_MODE['EXTREME_LONGS'] ? true : latestPositionData.reduce(
-        (numHeavyLongItems, currentItem) => currentItem.longShortDiff < -extremeLeverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numExtremeOccurencesForRelevance;
+        (numHeavyLongItems, currentItem) => currentItem.longShortDiff > -extremeLeverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numExtremeOccurencesForRelevance;
     const isSustainedHeavyShorts = latestPositionData.reduce(
-        (numHeavyLongItems, currentItem) => currentItem.longShortDiff > leverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numSustainedOccurencesForRelevance;
+        (numHeavyLongItems, currentItem) => currentItem.longShortDiff < leverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numSustainedOccurencesForRelevance;
     const isExtremeShorts = DEBUG_MODE['EXTREME_SHORTS'] ? true : latestPositionData.reduce(
-        (numHeavyLongItems, currentItem) => currentItem.longShortDiff > extremeLeverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numExtremeOccurencesForRelevance;
+        (numHeavyLongItems, currentItem) => currentItem.longShortDiff < extremeLeverageThreshold ? numHeavyLongItems + 1 : numHeavyLongItems, 0) >= numExtremeOccurencesForRelevance;
     const latestFiftyData = allPositionsData.slice(1, 50);
     const isLongShortDiffFlippedSign = latestFiftyData
         .some(
