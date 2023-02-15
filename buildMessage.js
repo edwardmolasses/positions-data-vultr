@@ -334,8 +334,9 @@ const getMessageStats = (
 ) => {
     const extremeLowTimeframeLeverageEmoji = latestTrendPercentChange > 0 ? bullEmoji : latestTrendPercentChange < 0 ? bearEmoji : '';
     const longShortDiffPercent24hEmoji = longShortDiffPercent24h > 0 ? bullEmoji : longShortDiffPercent24h < 0 ? bearEmoji : '';
-    const volumePercentageTitle = shortVolume <= longVolume ? `S as % of L` : `L as % of S`;
-    const isShortsOrLongsBigger = longVolume > shortVolume ? `L` : `S`;
+    const shortsSmallerThanLongs = shortVolume <= longVolume;
+    const volumePercentageTitle = shortsSmallerThanLongs ? `S as % of L` : `L as % of S`;
+    const isShortsOrLongsBigger = shortsSmallerThanLongs ? `S` : `L`;
     let msg = '\n';
 
     msg += `<pre>`;
